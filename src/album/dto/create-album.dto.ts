@@ -1,9 +1,8 @@
 import { IsString } from 'class-validator';
 
-export class CreateTrackDto {
+export class CreateAlbumDto {
   @IsString()
   name: string;
+  year: number;
   artistId: string | null; // refers to Artist
-  albumId: string | null; // refers to Album
-  duration: number; // integer number
 }
