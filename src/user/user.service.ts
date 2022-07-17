@@ -49,7 +49,6 @@ export class UserService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto)
     const { oldPassword, newPassword } = updateUserDto;
 
     const user = this._checkAndGetUserIfExists(id);
