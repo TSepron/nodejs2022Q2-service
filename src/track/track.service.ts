@@ -54,4 +54,20 @@ export class TrackService {
 
     this.tracks = this.tracks.filter((track) => track.id !== id);
   }
+
+  resetAlbumId(trackId: string, albumId: string) {
+    const track = this._checkAndGetTrackIfExists(trackId);
+
+    if (track.albumId === albumId) {
+      track.albumId = null;
+    }
+  }
+
+  resetArtistId(trackId: string, artistId: string) {
+    const track = this._checkAndGetTrackIfExists(trackId);
+
+    if (track.artistId === artistId) {
+      track.artistId = null;
+    }
+  }
 }
