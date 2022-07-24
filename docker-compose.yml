@@ -1,9 +1,13 @@
 version: "3.9"
+
 services:
   rss-rest-app:
     container_name: rss-rest-app
     restart: always
     build: .
+    environment:
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGUSER=${POSTGRES_USER}
     ports:
       - ${PORT}:${PORT}
     networks:
@@ -14,13 +18,26 @@ services:
         target: /home/projects/rss-rest/src
       - ./logs:/home/projects/rss-rest/logs
     depends_on:
-      - rss-rest-db
+      rss-rest-db:
+        condition: service_healthy
     env_file:
       - .env
+
   rss-rest-db:
     container_name: rss-rest-db
     restart: always
     build: ./db
+    # image: 'postgres'
+    environment:
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      PGDATA: "${PGDATA}"
+      
+      # PGUSER ENV variable is only required for the healthcheck section -
+      # if you don't specify it, the check command will fail stating 
+      # the root user doesn't exist in posgres
+      PGUSER: "${POSTGRES_USER}"
     ports:
       - ${PGPORT}:${PGPORT}
     networks:
@@ -30,7 +47,15 @@ services:
       - .:/var/lib/postgresql/data
     env_file:
       - .env
+    command: postgres -c logging_collector=on
+    healthcheck:
+      #CHANGE 1: this command checks if the database is ready, right on the source db server
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 networks:
   rss-rest-net:
     name: rss-rest-net
+    driver: bridge

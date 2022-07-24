@@ -9,3 +9,5 @@ logs
 .git
 dist
 .env.example
+pgdata
+logs
