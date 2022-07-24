@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Column, Entity, PrimaryGeneratedColumn, VersionColumn } from 'typeorm';
 
 export class User {
   id: string; // uuid v4
@@ -15,4 +16,25 @@ export class User {
     this.version = 1;
     this.createdAt = this.updatedAt = Date.now();
   }
+}
+
+@Entity()
+export class UserEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  login: string;
+
+  @Column()
+  password: string;
+
+  @VersionColumn()
+  version: number;
+
+  @Column()
+  createdAt: number;
+
+  @Column()
+  updatedAt: number;
 }
