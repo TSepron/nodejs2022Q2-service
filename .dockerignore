@@ -1,0 +1,11 @@
+**/node_modules
+**/Dockerfile
+docker-compose.yml
+.dockerignore
+npm-debug.log
+logs
+.idea
+.vscode
+.git
+dist
+.env.example
