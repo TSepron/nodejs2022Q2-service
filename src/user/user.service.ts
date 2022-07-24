@@ -3,15 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserEntity } from './entities/user.entity';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
-
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   _formatUser(user: User) {
@@ -20,8 +18,8 @@ export class UserService {
     return userWithoutPassword;
   }
 
-  _checkAndGetUserIfExists(id: string) {
-    const user = this.users.find((user) => user.id === id);
+  async _checkAndGetUserIfExists(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
 
     if (user == null) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -36,42 +34,45 @@ export class UserService {
     }
   }
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     const { login, password } = createUserDto;
     const user = new User(login, password);
 
-    this.users.push(user);
+    const newUser = await this.userRepository.save(user);
+
+    return this._formatUser(newUser);
+  }
+
+  async findAll() {
+    return await this.userRepository.find();
+  }
+
+  async findOne(id: string) {
+    const user = await this._checkAndGetUserIfExists(id);
 
     return this._formatUser(user);
   }
 
-  findAll() {
-    return this.users;
-  }
-
-  findOne(id: string) {
-    const user = this._checkAndGetUserIfExists(id);
-
-    return this._formatUser(user);
-  }
-
-  update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const { oldPassword, newPassword } = updateUserDto;
 
-    const user = this._checkAndGetUserIfExists(id);
+    const user = await this._checkAndGetUserIfExists(id);
 
     this._checkPassword(user.password, oldPassword);
 
     user.password = newPassword;
     user.version++;
     user.updatedAt = Date.now();
+    user.createdAt = Number(user.createdAt);
 
-    return this._formatUser(user);
+    const updatedUser = await this.userRepository.save(user);
+
+    return this._formatUser(updatedUser);
   }
 
-  remove(id: string) {
-    this._checkAndGetUserIfExists(id);
+  async remove(id: string) {
+    const userForRemove = await this._checkAndGetUserIfExists(id);
 
-    this.users = this.users.filter((user) => user.id !== id);
+    await this.userRepository.remove(userForRemove);
   }
 }

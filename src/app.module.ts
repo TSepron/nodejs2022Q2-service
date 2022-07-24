@@ -11,13 +11,13 @@ import { FavsModule } from './favs/favs.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'test',
-      entities: [],
+      type: 'postgres',
+      host: process.env.PGHOST,
+      port: Number(process.env.PGPORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      autoLoadEntities: true,
       synchronize: true,
     }),
     UserModule,
