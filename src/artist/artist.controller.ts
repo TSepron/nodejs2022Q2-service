@@ -47,14 +47,17 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param() params: ParamIdDto) {
-    const trackWithSuchArtistId = this.trackService
-      .findAll()
-      .find((track) => track.artistId === params.id);
+  async remove(@Param() params: ParamIdDto) {
+    const trackWithSuchArtistId = (await this.trackService.findAll()).find(
+      (track) => track.artistId === params.id,
+    );
 
     if (trackWithSuchArtistId) {
-      this.trackService.resetArtistId(trackWithSuchArtistId.id, params.id);
+      await this.trackService.resetArtistId(
+        trackWithSuchArtistId.id,
+        params.id,
+      );
     }
-    return this.artistService.remove(params.id);
+    return await this.artistService.remove(params.id);
   }
 }

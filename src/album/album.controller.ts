@@ -44,14 +44,15 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param() params: ParamIdDto) {
-    const trackWithSuchAlbumId = this.trackService
-      .findAll()
-      .find((track) => track.albumId === params.id);
+  async remove(@Param() params: ParamIdDto) {
+    const tracks = await this.trackService.findAll();
+    const trackWithSuchAlbumId = tracks.find(
+      (track) => track.albumId === params.id,
+    );
 
     if (trackWithSuchAlbumId) {
-      this.trackService.resetAlbumId(trackWithSuchAlbumId.id, params.id);
+      await this.trackService.resetAlbumId(trackWithSuchAlbumId.id, params.id);
     }
-    return this.albumService.remove(params.id);
+    return await this.albumService.remove(params.id);
   }
 }

@@ -25,52 +25,52 @@ export class FavsController {
   ) {}
 
   @Get()
-  findAll() {
-    const tracks = this.trackService.findAll();
-    const artists = this.artistService.findAll();
-    const albums = this.albumService.findAll();
+  async findAll() {
+    const tracks = await this.trackService.findAll();
+    const artists = await this.artistService.findAll();
+    const albums = await this.albumService.findAll();
     return this.favsService.findAll(tracks, artists, albums);
   }
 
   // track
   @Post('track/:id')
-  createTrack(@Param() params: ParamIdDto) {
-    const tracks = this.trackService.findAll();
+  async createTrack(@Param() params: ParamIdDto) {
+    const tracks = await this.trackService.findAll();
     return this.favsService.addTrack(params.id, tracks);
   }
 
   @Delete('track/:id')
   @HttpCode(204)
-  removeTrack(@Param() params: ParamIdDto) {
-    const tracks = this.trackService.findAll();
+  async removeTrack(@Param() params: ParamIdDto) {
+    const tracks = await this.trackService.findAll();
     return this.favsService.removeTrack(params.id, tracks);
   }
 
   // artist
   @Post('artist/:id')
-  createArtist(@Param() params: ParamIdDto) {
-    const artists = this.artistService.findAll();
+  async createArtist(@Param() params: ParamIdDto) {
+    const artists = await this.artistService.findAll();
     return this.favsService.addArtist(params.id, artists);
   }
 
   @Delete('artist/:id')
   @HttpCode(204)
-  removeArtist(@Param() params: ParamIdDto) {
-    const artists = this.artistService.findAll();
+  async removeArtist(@Param() params: ParamIdDto) {
+    const artists = await this.artistService.findAll();
     return this.favsService.removeArtist(params.id, artists);
   }
 
   // album
   @Post('album/:id')
-  addAlbum(@Param() params: ParamIdDto) {
-    const albums = this.albumService.findAll();
+  async addAlbum(@Param() params: ParamIdDto) {
+    const albums = await this.albumService.findAll();
     return this.favsService.addAlbum(params.id, albums);
   }
 
   @Delete('album/:id')
   @HttpCode(204)
-  removeAlbum(@Param() params: ParamIdDto) {
-    const albums = this.albumService.findAll();
+  async removeAlbum(@Param() params: ParamIdDto) {
+    const albums = await this.albumService.findAll();
     return this.favsService.removeAlbum(params.id, albums);
   }
 }
