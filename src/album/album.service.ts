@@ -32,7 +32,7 @@ export class AlbumService {
   }
 
   async findAll() {
-    const result = await this.albumRepository.find()
+    const result = await this.albumRepository.find();
     return result;
   }
 

@@ -1,6 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateFavDto } from './dto/create-fav.dto';
 import { UpdateFavDto } from './dto/update-fav.dto';
+import { AlbumFavs, ArtistFavs, TrackFavs } from './entities/fav.entity';
 
 @Injectable()
 export class FavsService {
@@ -10,17 +13,38 @@ export class FavsService {
     tracksIds: [],
   };
 
-  findAll(
-    tracks: Track[],
-    artists: Artist[],
-    albums: Album[],
-  ): FavoritesRepsonse {
+  constructor(
+    @InjectRepository(ArtistFavs)
+    private readonly artistFavsRepository: Repository<ArtistFavs>,
+    @InjectRepository(AlbumFavs)
+    private readonly albumFavsRepository: Repository<AlbumFavs>,
+    @InjectRepository(TrackFavs)
+    private readonly trackFavsRepository: Repository<TrackFavs>,
+  ) {}
+
+  async findAll(): Promise<FavoritesRepsonse> {
+    const [artists, albums, tracks] = await Promise.all([
+      this.artistFavsRepository.find({
+        relations: {
+          artist: true,
+        },
+      }),
+      this.albumFavsRepository.find({
+        relations: {
+          album: true,
+        },
+      }),
+      this.trackFavsRepository.find({
+        relations: {
+          track: true,
+        },
+      }),
+    ]);
+
     return {
-      artists: artists.filter((artist) =>
-        this.favs.artistsIds.includes(artist.id),
-      ),
-      albums: albums.filter((album) => this.favs.albumsIds.includes(album.id)),
-      tracks: tracks.filter((track) => this.favs.tracksIds.includes(track.id)),
+      artists: artists.map(({ artist }) => artist),
+      albums: albums.map(({ album }) => album),
+      tracks: tracks.map(({ track }) => track),
     };
   }
 
@@ -51,7 +75,7 @@ export class FavsService {
   }
 
   // track
-  addTrack(id: string, tracks: Track[]) {
+  async addTrack(id: string, tracks: Track[]) {
     const track = this._checkAndGetResourceIfExistsOnPost(id, {
       data: tracks,
       type: 'track',
@@ -66,66 +90,74 @@ export class FavsService {
     //     name: track.name,
     //   };
     // }
+    const trackFav = this.trackFavsRepository.create({ track });
+    const savedTrack = await this.trackFavsRepository.save(trackFav);
 
-    this.favs.tracksIds.push(id);
-
-    return track;
+    return savedTrack;
   }
 
-  removeTrack(id: string, tracks: Track[]) {
+  async removeTrack(id: string, tracks: Track[]) {
     this._checkResourceIfExistsOnDelete(id, {
       data: tracks,
       type: 'track',
     });
 
-    this.favs.tracksIds = this.favs.tracksIds.filter(
-      (trackId) => trackId !== id,
-    );
+    const trackFav = await this.trackFavsRepository.findBy({
+      track: { id },
+    });
+
+    await this.trackFavsRepository.remove(trackFav);
   }
 
   // artist
-  addArtist(id: string, artists: Artist[]) {
+  async addArtist(id: string, artists: Artist[]) {
     const artist = this._checkAndGetResourceIfExistsOnPost(id, {
       data: artists,
       type: 'artist',
     }) as Artist;
 
-    this.favs.artistsIds.push(id);
+    const artistFav = this.artistFavsRepository.create({ artist });
+    const savedArtist = await this.artistFavsRepository.save(artistFav);
 
-    return artist;
+    return savedArtist;
   }
 
-  removeArtist(id: string, artists: Artist[]) {
+  async removeArtist(id: string, artists: Artist[]) {
     this._checkResourceIfExistsOnDelete(id, {
       data: artists,
       type: 'artist',
     });
 
-    this.favs.artistsIds = this.favs.artistsIds.filter(
-      (artistId) => artistId !== id,
-    );
+    const artistFav = await this.artistFavsRepository.findBy({
+      artist: { id },
+    });
+
+    await this.artistFavsRepository.remove(artistFav);
   }
 
   // album
-  addAlbum(id: string, albums: Album[]) {
+  async addAlbum(id: string, albums: Album[]) {
     const album = this._checkAndGetResourceIfExistsOnPost(id, {
       data: albums,
       type: 'album',
     }) as Album;
 
-    this.favs.albumsIds.push(id);
+    const albumFav = this.albumFavsRepository.create({ album });
+    const savedAlbum = await this.albumFavsRepository.save(albumFav);
 
-    return album;
+    return savedAlbum;
   }
 
-  removeAlbum(id: string, albums: Album[]) {
+  async removeAlbum(id: string, albums: Album[]) {
     this._checkResourceIfExistsOnDelete(id, {
       data: albums,
       type: 'album',
     });
 
-    this.favs.albumsIds = this.favs.albumsIds.filter(
-      (albumId) => albumId !== id,
-    );
+    const albumFav = await this.albumFavsRepository.findBy({
+      album: { id },
+    });
+
+    await this.albumFavsRepository.remove(albumFav);
   }
 }
