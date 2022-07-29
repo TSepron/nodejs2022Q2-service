@@ -9,7 +9,7 @@ export class User {
   login: string;
   @Column({ type: 'text', nullable: true })
   password: string;
-  @Column('int')
+  @Column('bigint')
   version: number; // integer number, increments on update
   @Column('bigint')
   createdAt: number; // timestamp of creation
