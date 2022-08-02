@@ -1,3 +1,51 @@
+# REST service: Containerization, Docker
+
+## Prerequisites
+
+- Git - [Download & Install Git](https://git-scm.com/downloads).
+- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+
+## Downloading
+
+```
+git clone {repository URL}
+```
+
+### Rename .env.example to .env
+
+## Start Docker
+
+```
+npm run docker:up
+```
+
+After starting the app on port (4988 as default) you can open
+in your browser by typing http://localhost:4988
+
+## Finish Docker
+
+```
+npm run docker:down
+```
+
+## Build
+
+```
+npm run docker:build
+```
+
+## Scan for vulnerabilities
+(need to login to DockerHub and install docker scan)
+
+find YOUR_IMAGE_NAME through docker image ls
+```
+npm run docker:scan {YOUR_IMAGE_NAME}
+```
+
+[DockerHub](https://hub.docker.com/repository/docker/tsepron/nodejs2022q2-service_rss-rest-app)
+
+
+
 # Home Library Service
 
 ## Prerequisites

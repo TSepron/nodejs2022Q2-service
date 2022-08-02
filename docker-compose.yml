@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  rss-rest-app:
+    container_name: rss-rest-app
+    restart: always
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    networks:
+      - rss-rest-net
+    volumes:
+      - type: bind
+        source: ./src
+        target: /home/projects/rss-rest/src
+      - ./logs:/home/projects/rss-rest/logs
+    depends_on:
+      - rss-rest-db
+    env_file:
+      - .env
+  rss-rest-db:
+    container_name: rss-rest-db
+    restart: always
+    build: ./db
+    ports:
+      - ${PGPORT}:${PGPORT}
+    networks:
+      - rss-rest-net
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+networks:
+  rss-rest-net:
+    name: rss-rest-net
