@@ -42,33 +42,7 @@ find YOUR_IMAGE_NAME through docker image ls
 npm run docker:scan {YOUR_IMAGE_NAME}
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+[DockerHub](https://hub.docker.com/repository/docker/tsepron/nodejs2022q2-service_rss-rest-app)
 
 
 
