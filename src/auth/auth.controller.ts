@@ -19,7 +19,7 @@ export class AuthController {
     @Body() createAuthDto: CreateAuthDto,
   ) {
     const result = await this.authService.login(createAuthDto);
-    res.setHeader('Authorization', 'Bearer ' + result.access_token);
+    res.setHeader('Authorization', 'Bearer ' + result.accessToken);
     return result;
   }
 

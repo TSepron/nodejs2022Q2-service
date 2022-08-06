@@ -17,9 +17,7 @@ export class AuthService {
   async signup(createAuthDto: CreateAuthDto) {
     const newAuthUser = await this.authUserRepository.save(createAuthDto);
 
-    return {
-      message: `user with login: ${newAuthUser.login} had been successfully created`,
-    };
+    return newAuthUser;
   }
 
   async login(createAuthDto: CreateAuthDto) {
@@ -32,7 +30,7 @@ export class AuthService {
 
     const payload: Payload = { userId: authUser.id, login: authUser.login };
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 
