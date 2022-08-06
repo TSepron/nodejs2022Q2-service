@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { RefreshAuthDto } from './dto/refresh-auth.dto';
 import { AuthUser } from './entities/auth.entity';
@@ -15,6 +16,10 @@ export class AuthService {
   ) {}
 
   async signup(createAuthDto: CreateAuthDto) {
+    const saltRounds = 10;
+    const hash = await bcrypt.hash(createAuthDto.password, saltRounds);
+    createAuthDto.password = hash;
+
     const newAuthUser = await this.authUserRepository.save(createAuthDto);
 
     return newAuthUser;
@@ -23,8 +28,11 @@ export class AuthService {
   async login(createAuthDto: CreateAuthDto) {
     const { login, password } = createAuthDto;
     const authUser = await this.authUserRepository.findOneBy({ login });
+    const hash = authUser?.password;
 
-    if (authUser?.password !== password) {
+    const isPasswordCorrect = await bcrypt.compare(password, hash);
+
+    if (!isPasswordCorrect) {
       throw new HttpException('authentication failed', HttpStatus.FORBIDDEN);
     }
 
