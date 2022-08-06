@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { RefreshAuthDto } from './dto/refresh-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -20,11 +21,19 @@ export class AuthController {
   ) {
     const result = await this.authService.login(createAuthDto);
     res.setHeader('Authorization', 'Bearer ' + result.accessToken);
+    res.setHeader('x-custom-header-refreshtoken', result.refreshToken);
     return result;
   }
 
   @Post('refresh')
-  async refresh(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.refresh(createAuthDto);
+  @UseGuards(AuthGuard('jwt-refresh'))
+  async refresh(
+    @Res({ passthrough: true }) res: Response,
+    @Body() refreshAuthDto: RefreshAuthDto,
+  ) {
+    const result = await this.authService.refresh(refreshAuthDto);
+    res.setHeader('Authorization', 'Bearer ' + result.accessToken);
+    res.setHeader('x-custom-header-refreshtoken', result.refreshToken);
+    return result;
   }
 }

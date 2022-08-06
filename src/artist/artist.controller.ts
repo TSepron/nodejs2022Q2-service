@@ -17,7 +17,7 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('artist')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt-access'))
 export class ArtistController {
   constructor(
     private readonly artistService: ArtistService,

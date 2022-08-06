@@ -18,7 +18,7 @@ import { AlbumService } from 'src/album/album.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('favs')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt-access'))
 export class FavsController {
   constructor(
     private readonly favsService: FavsService,

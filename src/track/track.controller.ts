@@ -16,7 +16,7 @@ import { ParamIdDto } from 'src/common/dto/id.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('track')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt-access'))
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 

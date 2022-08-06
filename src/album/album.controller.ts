@@ -17,7 +17,7 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('album')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt-access'))
 export class AlbumController {
   constructor(
     private readonly albumService: AlbumService,

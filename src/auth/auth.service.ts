@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { RefreshAuthDto } from './dto/refresh-auth.dto';
 import { AuthUser } from './entities/auth.entity';
 
 @Injectable()
@@ -31,10 +31,47 @@ export class AuthService {
     const payload: Payload = { userId: authUser.id, login: authUser.login };
     return {
       accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
+        secret: process.env.JWT_SECRET_REFRESH_KEY,
+        expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
+      }),
     };
   }
 
-  refresh(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  async refresh(refreshAuthDto: RefreshAuthDto) {
+    const { refreshToken } = refreshAuthDto;
+    const oldPayload: OldPayload = this._verifyJwt(refreshToken);
+    delete oldPayload.iat;
+    delete oldPayload.exp;
+
+    const { userId, login, exp } = oldPayload;
+
+    if (!exp) {
+      throw new HttpException(
+        'authentication failed, Refresh token is expired',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return {
+      accessToken: this.jwtService.sign({ userId, login }),
+      refreshToken: this.jwtService.sign(
+        { userId, login },
+        {
+          secret: process.env.JWT_SECRET_REFRESH_KEY,
+          expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
+        },
+      ),
+    };
+  }
+
+  _verifyJwt(refreshToken) {
+    try {
+      return this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_SECRET_REFRESH_KEY,
+      });
+    } catch {
+      throw new HttpException('authentication failed', HttpStatus.FORBIDDEN);
+    }
   }
 }
