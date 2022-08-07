@@ -4,6 +4,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import * as YAML from 'yamljs';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
+import { LoggerService } from './logger/logger.service';
 dotenv.config();
 
 async function bootstrap() {
@@ -13,6 +14,7 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, document);
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useLogger(app.get(LoggerService));
 
   await app.listen(process.env.PORT || 4000);
 }
