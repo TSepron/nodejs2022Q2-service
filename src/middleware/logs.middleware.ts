@@ -4,7 +4,7 @@ import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 class LoggingServiceMiddleware implements NestMiddleware {
-  private readonly logger = new LoggerService(LoggingServiceMiddleware.name);
+  private readonly logger = new LoggerService(LoggerService.name);
 
   use(request: Request, response: Response, next: NextFunction) {
     response.on('finish', () => {
