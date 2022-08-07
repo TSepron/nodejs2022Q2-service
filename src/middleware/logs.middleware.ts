@@ -11,12 +11,14 @@ class LoggingServiceMiddleware implements NestMiddleware {
       const { method, originalUrl, query, body } = request;
       const { statusCode, statusMessage } = response;
 
-      const message = `method: ${method} 
+      const message = `
+      method: ${method} 
       originalUrl: ${originalUrl}
       query: ${JSON.stringify(query)}
       body: ${JSON.stringify(body)}
       statusCode: ${statusCode} 
-      statusMessage: ${statusMessage}`;
+      statusMessage: ${statusMessage}
+      `;
 
       return this.logger.log(message);
     });
