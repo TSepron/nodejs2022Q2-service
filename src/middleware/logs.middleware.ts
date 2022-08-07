@@ -13,7 +13,8 @@ class LoggingServiceMiddleware implements NestMiddleware {
 
       const message = `method: ${method} 
       originalUrl: ${originalUrl}
-      
+      query: ${JSON.stringify(query)}
+      body: ${JSON.stringify(body)}
       statusCode: ${statusCode} 
       statusMessage: ${statusMessage}`;
 
