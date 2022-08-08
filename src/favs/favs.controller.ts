@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { CreateFavDto } from './dto/create-fav.dto';
@@ -14,8 +15,10 @@ import { ParamIdDto } from 'src/common/dto/id.dto';
 import { TrackService } from 'src/track/track.service';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumService } from 'src/album/album.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('favs')
+@UseGuards(AuthGuard('jwt-access'))
 export class FavsController {
   constructor(
     private readonly favsService: FavsService,

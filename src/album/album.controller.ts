@@ -7,14 +7,17 @@ import {
   Param,
   Delete,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { ParamIdDto } from 'src/common/dto/id.dto';
 import { TrackService } from 'src/track/track.service';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('album')
+@UseGuards(AuthGuard('jwt-access'))
 export class AlbumController {
   constructor(
     private readonly albumService: AlbumService,
