@@ -28,6 +28,14 @@ export class AuthService {
   async login(createAuthDto: CreateAuthDto) {
     const { login, password } = createAuthDto;
     const authUser = await this.authUserRepository.findOneBy({ login });
+
+    if (authUser == null) {
+      throw new HttpException(
+        'authentication failed, no such user',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const hash = authUser?.password;
 
     const isPasswordCorrect = await bcrypt.compare(password, hash);
